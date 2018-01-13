@@ -20,6 +20,7 @@ import json
 from docopt import docopt, printable_usage
 from schema import Schema, Use, SchemaError
 from requests import Request
+from internetarchive.auth import S3PostAuth
 
 __title__ = __name__
 __version__ = '0.0.1.dev1'
@@ -68,11 +69,12 @@ def main(argv=None, session=None):
         method='POST',
         url=item.urls.metadata,
         data=data,
+        auth=S3PostAuth(session.access_key, session.secret_key),
     )
     prepared_request = request.prepare()
 
     # TODO: probably ready to uncomment this, and give it a try?
-    #r = self.session.send(prepared_request)
+    #r = session.send(prepared_request)
     #if r.status_code == 200 or 'no changes' in r.text:
     #    print('success: {}'.format(item.urls.history))
     #    sys.exit(0)
@@ -80,10 +82,10 @@ def main(argv=None, session=None):
     #    print('error: {} - {} - {}'.format(item.identifier, r.status_code, r.content))
     #    sys.exit(1)
 
-    # TODO: delete
-    print('args:\n\n{}\n'.format(args))
-    print('item:\n\n{}\n'.format(item))
-    print('POST data:\n\n{}'.format(request.data))
+    ## TODO: delete
+    #print('args:\n\n{}\n'.format(args))
+    #print('item:\n\n{}\n'.format(item))
+    #print('POST data:\n\n{}'.format(request.data))
 
 if __name__ == '__main__':
     main()
