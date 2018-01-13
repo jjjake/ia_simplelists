@@ -28,7 +28,7 @@ __url__ = 'https://github.com/jjjake/ia_simplelists'
 __author__ = 'Jacob M. Johnson'
 __email__ = 'jake@archive.org'
 __license__ = 'AGPL 3'
-__copyright__ = 'Copyright 2015 Internet Archive'
+__copyright__ = 'Copyright 2018 Internet Archive'
 __all__ = [__title__]
 
 

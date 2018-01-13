@@ -1,4 +1,4 @@
-Sample plugin for the Internet Archive command-line tool.
----------------------------------------------------------
+An 'ia' plugin for simplelists
+------------------------------
 
-This package serves as an example of how to write a plugin for the internetarchive command-line tool.
+no docs yet.
