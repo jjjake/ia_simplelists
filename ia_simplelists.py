@@ -1,21 +1,28 @@
 #!/usr/bin/env python
 """An 'ia' plugin for simplelists.
 
-Usage: ia simplelists [--help] [--field FIELD] <identifier>
+Usage:
+    ia simplelists <identifier> [options]...
+    ia simplelists --help
 
 Options:
-  -h, --help                Show this help message and exit.
-  -f, --field FIELD         Return specific metadata field [default: metadata].
+  -h, --help            Show this help message and exit.
+  -l, --list LIST       The list. [default: disability_access_eligible]
+  -p, --parent PARENT   The parent. [default: internet_archive_pd_access]
+
 
 Examples:
-    $ ia simplelists --field metadata.title nasa
-    NASA Images
-"""
-from docopt import docopt
 
-# The module name must start with "ia_" in order for it to be recognized as a plugin.
+"""
+import sys
+import json
+
+from docopt import docopt, printable_usage
+from schema import Schema, Use, SchemaError
+from requests import Request
+
 __title__ = __name__
-__version__ = '0.0.1'
+__version__ = '0.0.1.dev1'
 __url__ = 'https://github.com/jjjake/ia_plugin'
 __author__ = 'Jacob M. Johnson'
 __email__ = 'jake@archive.org'
@@ -24,21 +31,59 @@ __copyright__ = 'Copyright 2015 Internet Archive'
 __all__ = [__title__]
 
 
-# `main()` must include two parameters: `argv` and `session`.
-# `argv` is a list of args passed in from `ia`, and `session` is an
-# `interenetarchive.ArchiveSession` object. These parameters don't
-# necessarily need to be used, necessarily, but must be specified.
 def main(argv=None, session=None):
     # Parse the list of args passed in from `ia`.
     args = docopt(__doc__, argv=argv)
+    del args['simplelists']
 
-    # Write your plugin!
+    # Validate and prepare args.
+    s = Schema({
+        str: Use(bool),
+        '<identifier>': str,
+        '--parent': Use(lambda p: p[0]),
+        '--list': Use(lambda l: l[0]),
+    })
+    try:
+        args = s.validate(args)
+    except SchemaError as exc:
+        print('{0}\n{1}'.format(str(exc), printable_usage(__doc__)), file=sys.stderr)
+        sys.exit(1)
+
     item = session.get_item(args['<identifier>'])
-    fields = args['--field'].split('.')
-    md = item.item_metadata
-    for f in fields:
-        md = md.get(f)
-    print(md)
+
+    patch = json.dumps({
+        'op': 'set',
+        'list': args['--list'],
+        'parent': args['--parent'],
+    })
+    data = {
+        '-patch': patch,
+        '-target': 'simplelists',
+        'priority': '-5',
+    }
+
+    # Build request.
+    request = Request(
+        method='POST',
+        url=item.urls.metadata,
+        data=data,
+    )
+    prepared_request = request.prepare()
+    print('success: {}'.format(item.urls.history))
+
+    # TODO: probably ready to uncomment this, and give it a try?
+    #r = self.session.send(prepared_request)
+    #if r.status_code == 200 or 'no changes' in r.text:
+    #    print('success: {}'.format(item.urls.history))
+    #    sys.exit(0)
+    #else:
+    #    print('error: {} - {} - {}'.format(item.identifier, r.status_code, r.content))
+    #    sys.exit(1)
+
+    # TODO: delete
+    print('args:\n\n{}\n'.format(args))
+    print('item:\n\n{}\n'.format(item))
+    print('POST data:\n\n{}'.format(request.data))
 
 if __name__ == '__main__':
     main()
