@@ -82,10 +82,10 @@ def main(argv=None, session=None):
     #    print('error: {} - {} - {}'.format(item.identifier, r.status_code, r.content))
     #    sys.exit(1)
 
-    ## TODO: delete
-    #print('args:\n\n{}\n'.format(args))
-    #print('item:\n\n{}\n'.format(item))
-    #print('POST data:\n\n{}'.format(request.data))
+    # TODO: delete
+    print('args:\n\n{}\n'.format(args))
+    print('item:\n\n{}\n'.format(item))
+    print('POST data:\n\n{}'.format(request.data))
 
 if __name__ == '__main__':
     main()
