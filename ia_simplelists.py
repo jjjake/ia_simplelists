@@ -23,7 +23,7 @@ from requests import Request
 
 __title__ = __name__
 __version__ = '0.0.1.dev1'
-__url__ = 'https://github.com/jjjake/ia_plugin'
+__url__ = 'https://github.com/jjjake/ia_simplelists'
 __author__ = 'Jacob M. Johnson'
 __email__ = 'jake@archive.org'
 __license__ = 'AGPL 3'
@@ -51,6 +51,7 @@ def main(argv=None, session=None):
 
     item = session.get_item(args['<identifier>'])
 
+    # Prepare patch and POST data.
     patch = json.dumps({
         'op': 'set',
         'list': args['--list'],
@@ -69,7 +70,6 @@ def main(argv=None, session=None):
         data=data,
     )
     prepared_request = request.prepare()
-    print('success: {}'.format(item.urls.history))
 
     # TODO: probably ready to uncomment this, and give it a try?
     #r = self.session.send(prepared_request)
